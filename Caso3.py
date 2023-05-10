@@ -1,9 +1,6 @@
 import tkinter as tk
 import pyodbc
 
-
-
-
 #cursor.execute('SELECT * FROM contratos')
 
 class VentanaRegistroVentas(tk.Frame):
@@ -91,11 +88,6 @@ class VentanaRegistroVentas(tk.Frame):
         # actualizar la variable de cantidad disponible y la etiqueta correspondiente
         self.cantidad_disponible.set(str(cantidad_disponible))
         self.actualizar_precio(producto)
-
-    
-
-        
-
 
     
 

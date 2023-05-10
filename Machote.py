@@ -1,4 +1,5 @@
 import pyodbc
+import tkinter as tk
 
 server = 'nombre_servidor'
 database = 'nombre_base_datos'
@@ -8,8 +9,6 @@ conn = pyodbc.connect('DRIVER={SQL Server};SERVER=' + server + ';DATABASE=' + da
 
 cursor = conn.cursor()
 cursor.execute('SELECT * FROM contratos')
-
-import tkinter as tk
 
 class VentanaRegistroVentas(tk.Tk):
     def __init__(self):
