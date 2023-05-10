@@ -71,7 +71,8 @@ class VentanaRegistroVentas(tk.Frame):
         conn =  pyodbc.connect(f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};TRUSTED_CONNECTION=yes;')
         cursor = conn.cursor()
         cursor.execute('SELECT p.descripcion FROM productos p JOIN productos_producidos pp ON p.producto_id = pp.producto_id WHERE pp.contrato_id = ?', contrato_id)
-        tk.OptionMenu(self, self.nombre_producto, *[row[0] for row in self.productos], command=self.actualizar_cantidad).grid(row=2, column=1)
+        productos = cursor.fetchall()
+        tk.OptionMenu(self, self.nombre_producto, *[row[0] for row in productos], command=self.actualizar_cantidad).grid(row=2, column=1)
         
     def calcular_costo(self):
         cantidad = float(self.cantidad.get())
@@ -99,7 +100,7 @@ class VentanaRegistroVentas(tk.Frame):
 
 
     def actualizar_cantidad(self, producto):
-        contrato_id = int(self.contrato_id.get())
+        contrato_id = int(self.num_contrato.get())
         # conectar a la base de datos
         server = 'localhost'
         database = 'caso3'
@@ -138,7 +139,7 @@ class VentanaRegistroVentas(tk.Frame):
         producto_id = cursor.fetchall()[0][0]
 
         # Obtener los valores de los campos de entrada
-        contrato_id = int(self.contrato_id.get())
+        contrato_id = int(self.num_contrato.get())
         ganancias = float(self.ganancias.get())
 
 
