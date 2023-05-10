@@ -73,12 +73,12 @@ class VentanaRegistroVentas(tk.Frame):
         tk.Button(self, text='Ver pagos', command=self.pagos).grid(row=5, column=2)
 
     def calcular_costo(self):
-        cantidad = int(self.cantidad.get())
+        cantidad = float(self.cantidad.get())
         precio = float(self.precio.get())
         costo = precio * cantidad
         self.costo.set(str(costo))
 
-        costo2 = int(self.costoP.get())
+        costo2 = float(self.costoP.get())
         ganacias = costo - costo2
         self.ganancias.set(str(ganacias))
 
@@ -106,7 +106,7 @@ class VentanaRegistroVentas(tk.Frame):
         cursor = conn.cursor()
         cursor.execute('SELECT producto_id FROM productos WHERE descripcion = ?', producto)
         producto_id = cursor.fetchall()[0][0]
-        cursor.execute('SELECT proceso_id FROM contrato WHERE contrato_id = ?', contrato_id)
+        cursor.execute('SELECT proceso_id FROM proceso WHERE contrato_id = ?', contrato_id)
         proceso_id = cursor.fetchall()[0][0]
         cursor.execute('SELECT costo FROM proceso WHERE proceso_id = ?', proceso_id)
         costo2 = cursor.fetchall()[0][0]
@@ -126,6 +126,7 @@ class VentanaRegistroVentas(tk.Frame):
         ventana_montos = tk.Toplevel()
         ventana_montos.title('Montos')
         ventana_montos.geometry('300x200')
+        nombre_producto = self.nombre_producto.get()
 
         # conectar a la base de datos
         server = 'localhost'
@@ -137,7 +138,7 @@ class VentanaRegistroVentas(tk.Frame):
 
         # Obtener los valores de los campos de entrada
         contrato_id = int(self.contrato_id.get())
-        ganancias = int(self.ganancias.get())
+        ganancias = float(self.ganancias.get())
 
 
         # Obtener el contrato correspondiente al producto
@@ -145,19 +146,19 @@ class VentanaRegistroVentas(tk.Frame):
         cursor.execute('SELECT actor_id FROM actores_x_contrato WHERE contrato_id = ?', contrato_id)
         actores = cursor.fetchall()
 
-        cursor.execute('SELECT procentaje FROM actores_x_contrato WHERE contrato_id = ?', contrato_id)
+        cursor.execute('SELECT porcentaje FROM actores_x_contrato WHERE contrato_id = ?', contrato_id)
         porcentajes = cursor.fetchall()
 
-        cursor.execute('SELECT procentaje FROM contrato WHERE contrato_id = ?', contrato_id)
-        porcentajeR = cursor.fetchall()[0]
+        cursor.execute('SELECT porcentaje FROM contrato WHERE contrato_id = ?', contrato_id)
+        porcentajeR = cursor.fetchone()[0]
 
         cursor.execute('SELECT recolector_id FROM contrato WHERE contrato_id = ?', contrato_id)
-        recolector_id = cursor.fetchall()[0]
+        recolector_id = cursor.fetchone()[0]
 
-        cursor.execute('SELECT nombre FROM recolectores WHERE contrato_id = ?', recolector_id)
-        nombre = cursor.fetchall()[0]
+        cursor.execute('SELECT nombre FROM recolectores WHERE recolector_id = ?', recolector_id)
+        nombre = cursor.fetchone()[0]
         
-        montoR = ganancias * porcentajeR
+        montoR = ganancias * float(porcentajeR)
 
         # Mostrar los montos en una lista
         tk.Label(ventana_montos, text=nombre).grid(row=1, column=0)
@@ -166,7 +167,7 @@ class VentanaRegistroVentas(tk.Frame):
         for i, actor in enumerate(actores):
             cursor.execute('SELECT descripcion FROM actores WHERE actor_id = ?', actor[1])
             nombreA = cursor.fetchall()[0]
-            montoN = porcentajes[i] * ganancias
+            montoN = float(porcentajes[i]) * ganancias
             tk.Label(ventana_montos, text=nombre).grid(row=i+1, column=0)
             tk.Label(ventana_montos, text=str(montoN)).grid(row=i+1, column=1)
 
