@@ -17,15 +17,12 @@ class VentanaRegistroVentas(tk.Frame):
         conn =  pyodbc.connect(f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};TRUSTED_CONNECTION=yes;')
         cursor = conn.cursor()
         #contrato
+        self.num_contrato = tk.StringVar(value='Seleccione un contrato')
+        cursor.execute('SELECT contrato_id FROM contrato')
+        contratos =  cursor.fetchall()
         tk.Label(self, text='# Contrato:').grid(row=1, column=0)
-        self.contrato_id = tk.Entry(self)
-        self.contrato_id.grid(row=1, column=1)
-        contrato_id= self.contrato_id
-
-        # obtener los nombres y cantidades de los productos de la base de datos
-        cursor.execute('SELECT p.descripcion FROM productos p JOIN productos_producidos pp ON p.producto_id = pp.producto_id WHERE pp.contrato_id = ?', contrato_id)
-        productos = cursor.fetchall()
-
+        tk.OptionMenu(self, self.num_contrato, *[row[0] for row in contratos], command=self.contrato).grid(row=1, column=1)
+        
         # opción por defecto
         self.nombre_producto = tk.StringVar(value='Seleccione un producto')
         self.cantidad_disponible = tk.StringVar(value='0')
@@ -35,26 +32,20 @@ class VentanaRegistroVentas(tk.Frame):
         self.ganancias = tk.StringVar(value='0')
         
         # menú desplegable de productos y cantidad disponible
-        tk.Label(self, text='Nombre del producto:').grid(row=1, column=0)
-        tk.OptionMenu(self, self.nombre_producto, *[row[0] for row in productos], command=self.actualizar_cantidad).grid(row=1, column=1)
-        tk.Label(self, text = 'Cantidad disponible:').grid(row=2, column=2)
-        tk.Label(self, textvariable = self.cantidad_disponible).grid(row=2, column=3)
+        tk.Label(self, text='Nombre del producto:').grid(row=2, column=0)
+        tk.Label(self, text = 'Cantidad disponible:').grid(row=3, column=2)
+        tk.Label(self, textvariable = self.cantidad_disponible).grid(row=3, column=3)
 
         #cantidad
-        tk.Label(self, text='Cantidad:').grid(row=2, column=0)
+        tk.Label(self, text='Cantidad:').grid(row=3, column=0)
         self.cantidad = tk.Entry(self)
-        self.cantidad.grid(row=2, column=1)
+        self.cantidad.grid(row=3, column=1)
 
-        tk.Label(self, text='Precio Unitario:').grid(row=3, column=0)
-        tk.Label(self, textvariable = self.precio).grid(row=3, column=1)
+        tk.Label(self, text='Precio Unitario:').grid(row=4, column=0)
+        tk.Label(self, textvariable = self.precio).grid(row=4, column=1)
 
-        tk.Label(self, text='Costo:').grid(row=4, column=0)
-        tk.Label(self, textvariable = self.costo).grid(row=4, column=1)
-
-        #contrato
-        tk.Label(self, text='# Contrato:').grid(row=5, column=0)
-        self.contrato_id = tk.Entry(self)
-        self.contrato_id.grid(row=5, column=1)
+        tk.Label(self, text='Costo:').grid(row=5, column=0)
+        tk.Label(self, textvariable = self.costo).grid(row=5, column=1)
 
         #costo de produccion
         tk.Label(self, text='Costo de Producción:').grid(row=6, column=0)
@@ -65,19 +56,23 @@ class VentanaRegistroVentas(tk.Frame):
         tk.Label(self, textvariable = self.ganancias).grid(row=7, column=1)
         
 
-
-
-
-
         # botón de calcular costo
-        tk.Button(self, text='Calcular costo', command=self.calcular_costo).grid(row=6, column=2)
+        tk.Button(self, text='Calcular costo', command=self.calcular_costo).grid(row=5, column=2)
 
         # botón de registro de venta
-        tk.Button(self, text='Registrar venta', command=self.guardar_venta).grid(row=7, column=2)
+        tk.Button(self, text='Registrar venta', command=self.guardar_venta).grid(row=8, column=2)
 
         # botón de pagos
-        tk.Button(self, text='Ver pagos', command=self.pagos).grid(row=5, column=2)
+        tk.Button(self, text='Ver pagos', command=self.pagos).grid(row=9, column=2)
 
+    def contrato(self, contrato_id):
+        server = 'localhost'
+        database = 'caso3'
+        conn =  pyodbc.connect(f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};TRUSTED_CONNECTION=yes;')
+        cursor = conn.cursor()
+        cursor.execute('SELECT p.descripcion FROM productos p JOIN productos_producidos pp ON p.producto_id = pp.producto_id WHERE pp.contrato_id = ?', contrato_id)
+        tk.OptionMenu(self, self.nombre_producto, *[row[0] for row in self.productos], command=self.actualizar_cantidad).grid(row=2, column=1)
+        
     def calcular_costo(self):
         cantidad = float(self.cantidad.get())
         precio = float(self.precio.get())
