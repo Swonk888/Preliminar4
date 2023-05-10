@@ -23,9 +23,9 @@ class VentanaRegistroVentas(tk.Frame):
         contrato_id= self.contrato_id
 
         # obtener los nombres y cantidades de los productos de la base de datos
-        cursor.execute('SELECT p.descripcion FROM productos p JOIN contrato c ON p.producto_id = c.producto_id WHERE c.contrato_id = ?', contrato_id)
+        cursor.execute('SELECT p.descripcion FROM productos p JOIN productos_producidos pp ON p.producto_id = pp.producto_id WHERE pp.contrato_id = ?', contrato_id)
         productos = cursor.fetchall()
-        
+
         # opción por defecto
         self.nombre_producto = tk.StringVar(value='Seleccione un producto')
         self.cantidad_disponible = tk.StringVar(value='0')
