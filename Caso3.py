@@ -16,10 +16,16 @@ class VentanaRegistroVentas(tk.Frame):
         database = 'caso3'
         conn =  pyodbc.connect(f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};TRUSTED_CONNECTION=yes;')
         cursor = conn.cursor()
-        # obtener los nombres y cantidades de los productos de la base de datos
-        cursor.execute('SELECT descripcion FROM productos')
-        productos = cursor.fetchall()
+        #contrato
+        tk.Label(self, text='# Contrato:').grid(row=1, column=0)
+        self.contrato_id = tk.Entry(self)
+        self.contrato_id.grid(row=1, column=1)
+        contrato_id= self.contrato_id
 
+        # obtener los nombres y cantidades de los productos de la base de datos
+        cursor.execute('SELECT p.descripcion FROM productos p JOIN contrato c ON p.producto_id = c.producto_id WHERE c.contrato_id = ?', contrato_id)
+        productos = cursor.fetchall()
+        
         # opción por defecto
         self.nombre_producto = tk.StringVar(value='Seleccione un producto')
         self.cantidad_disponible = tk.StringVar(value='0')
