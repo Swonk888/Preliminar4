@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { Logger } from '../common';
 import { casorouter } from './casorouter';
+import { casorouter2 } from './casorouter2';
 
 class Routes {
 
@@ -24,7 +25,9 @@ class Routes {
 
     private routes(): void {
         this.express.use('/caso', casorouter);
+        this.express.use('/caso2', casorouter2);
         this.logger.info("caso route loaded");
+        this.logger.info("caso2 route loaded");
     }
 }
 
