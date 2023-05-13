@@ -60,6 +60,15 @@ class VentanaRegistroVentas(tk.Frame):
 
         # botón de calcular costo
         tk.Button(self, text='Agregar a Carrito', command=self.calcular_costo).grid(row=8, column=1)
+        
+        #box con los productos comprados
+        self.carrito_listbox = tk.Listbox(self)
+        self.carrito_listbox.grid(row=9, columnspan=0, pady=2)
+
+        #Eliminar producto
+        tk.Button(self, text='Eliminar Producto', command=self.eliminar_producto).grid(row=9, column=3)
+
+
 
         # botón de registro de venta
         tk.Button(self, text='Registrar venta', command=self.guardar_venta).grid(row=8, column=2)
@@ -67,6 +76,13 @@ class VentanaRegistroVentas(tk.Frame):
         # botón de pagos
         tk.Button(self, text='Ver detalle', command=self.pagos).grid(row=9, column=2)
 
+    def eliminar_producto(self):
+        seleccionado = self.carrito_listbox.curselection()
+        if seleccionado:
+            self.carrito_listbox.delete(seleccionado)
+        if seleccionado in self.compra:
+            self.compra.remove(seleccionado)
+            
     def actualizar_moneda(self, moneda):
         server = 'localhost'
         database = 'caso3'
@@ -112,6 +128,7 @@ class VentanaRegistroVentas(tk.Frame):
         
         producto = (self.nombre_producto.get())
         self.compra.append(producto)
+        self.carrito_listbox.insert(tk.END, producto)
 
         cantidadP = float(self.cantidad_disponible.get()) - cantidad
         cursor.execute('SELECT producto_id FROM productos WHERE descripcion = ?', nombreP)
