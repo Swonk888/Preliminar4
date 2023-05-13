@@ -71,10 +71,10 @@ class VentanaRegistroVentas(tk.Frame):
 
 
         # botón de registro de venta
-        tk.Button(self, text='Registrar venta', command=self.guardar_venta).grid(row=8, column=2)
+        tk.Button(self, text='Registrar venta', command=self.guardar_venta).grid(row=10, column=2)
 
         # botón de pagos
-        tk.Button(self, text='Ver detalle', command=self.pagos).grid(row=9, column=2)
+        tk.Button(self, text='Ver detalle', command=self.pagos).grid(row=11, column=2)
 
     def eliminar_producto(self):
         seleccionado = self.carrito_listbox.curselection()
@@ -82,7 +82,7 @@ class VentanaRegistroVentas(tk.Frame):
             self.carrito_listbox.delete(seleccionado)
         if seleccionado in self.compra:
             self.compra.remove(seleccionado)
-            
+
     def actualizar_moneda(self, moneda):
         server = 'localhost'
         database = 'caso3'
