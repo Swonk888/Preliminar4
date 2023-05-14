@@ -63,7 +63,7 @@ class VentanaRegistroVentas(tk.Frame):
         
         #box con los productos comprados
         self.carrito_listbox = tk.Listbox(self)
-        self.carrito_listbox.grid(row=9, columnspan=0, pady=2)
+        self.carrito_listbox.grid(row=9, columnspan=2, pady=2)
 
         #Eliminar producto
         tk.Button(self, text='Eliminar Producto', command=self.eliminar_producto).grid(row=9, column=3)
@@ -77,11 +77,30 @@ class VentanaRegistroVentas(tk.Frame):
         tk.Button(self, text='Ver detalle', command=self.pagos).grid(row=11, column=2)
 
     def eliminar_producto(self):
+        server = 'localhost'
+        database = 'caso3'
+        conn =  pyodbc.connect(f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};TRUSTED_CONNECTION=yes;')
+        cursor = conn.cursor()
         seleccionado = self.carrito_listbox.curselection()
+        nombre = self.carrito_listbox.get(seleccionado)
         if seleccionado:
             self.carrito_listbox.delete(seleccionado)
-        if seleccionado in self.compra:
-            self.compra.remove(seleccionado)
+            self.compra.remove(nombre)
+            for i, producto in enumerate(self.productos):
+                if producto[0] == nombre:
+                    cant0=producto[1]
+                    precio = producto[2]
+                    costo = cant0*precio
+                    self.costo.set(str(float(self.costo.get())-costo))
+                    self.productos.remove(producto)
+            cantidad = float(self.cantidad.get())
+            nombreP = self.nombre_producto.get()
+            cantidadP = float(self.cantidad_disponible.get()) + cantidad
+            cursor.execute('SELECT producto_id FROM productos WHERE descripcion = ?', nombreP)
+            producto_id = cursor.fetchall()[0][0]
+            cursor.execute('UPDATE productos_producidos set cantidad =? where producto_id = ?', cantidadP,producto_id)
+            conn.commit()
+            self.actualizar_cantidad(nombreP)
 
     def actualizar_moneda(self, moneda):
         server = 'localhost'
@@ -241,28 +260,30 @@ class VentanaRegistroVentas(tk.Frame):
         cursor = conn.cursor()
 
         #productos.append([nombreP, cantidad, precio, moneda_id, tipo_cambio_id])
-    
-        for i, venta in enumerate(self.productos):
-            # Obtener los valores de los campos de entrada
-            nombre_producto = venta[0]
-            cantidad = venta[1]
-            precio = venta[2]
-            moneda = venta[3]
-            tipo_cambio = venta[4]
-            cursor.execute('SELECT producto_id FROM productos WHERE descripcion = ?', nombre_producto)
-            producto_id = cursor.fetchone()[0]
+        if self.productos == []:
+            messagebox.showinfo('Error', f'No hay productos que registrar en la venta')
+        else:
+            for i, venta in enumerate(self.productos):
+                # Obtener los valores de los campos de entrada
+                nombre_producto = venta[0]
+                cantidad = venta[1]
+                precio = venta[2]
+                moneda = venta[3]
+                tipo_cambio = venta[4]
+                cursor.execute('SELECT producto_id FROM productos WHERE descripcion = ?', nombre_producto)
+                producto_id = cursor.fetchone()[0]
 
-            # Calcular el monto de la venta
-            monto_venta = cantidad * precio
+                # Calcular el monto de la venta
+                monto_venta = cantidad * precio
 
-            fecha = '2023-05-12 07:00:00'    
+                fecha = '2023-05-12 07:00:00'    
 
-            # Registrar Venta
-            cursor.execute('INSERT INTO ventas (producto_id, monto, fecha, cantidad, moneda_id, tipo_cambio_id) values (?, ?, ?, ?, ?, ?)', producto_id, monto_venta, fecha, cantidad, moneda, tipo_cambio)
-            conn.commit()
+                # Registrar Venta
+                cursor.execute('INSERT INTO ventas (producto_id, monto, fecha, cantidad, moneda_id, tipo_cambio_id) values (?, ?, ?, ?, ?, ?)', producto_id, monto_venta, fecha, cantidad, moneda, tipo_cambio)
+                conn.commit()
 
-        # Mostrar un mensaje de confirmación
-        messagebox.showinfo('Venta guardada', f'Se ha registrado una venta por un monto total de {self.simbolo.get()} {monto_venta}.')
+            # Mostrar un mensaje de confirmación
+            messagebox.showinfo('Venta guardada', f'Se ha registrado una venta por un monto total de {self.simbolo.get()} {monto_venta}.')
 
 
 root = tk.Tk()

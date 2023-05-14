@@ -35,5 +35,5 @@ EXEC dbo.showContractData @ContratoID = 11;
 EXEC dbo.showContractData @ContratoID = 11;
 EXEC dbo.showContractData @ContratoID = 11;
 
-
-
+DBCC CHECKIDENT(ventas, RESEED, 1);
+select * from ventas
