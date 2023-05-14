@@ -5,7 +5,7 @@ import { CasoController2 } from '../controllers'
 const app = express();
 const log = new Logger();
 
-app.post("/getfilteredventas2", (req, res,next) => {
+app.post("/showcontractdata2", (req, res,next) => {
     CasoController2.getInstance().getFilteredVentas2(req.body.filter)
     .then((data: any)=>{
         res.json(data);

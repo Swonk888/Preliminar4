@@ -26,7 +26,7 @@ export class data_caso2 {
             await connection.connect();
             const result = await connection.request()
             .input('ContratoID', sql.Int, filter)
-            .execute('getFilteredVentas');
+            .execute('showContractData');
             return result.recordset;
         } catch (error) {
             console.error(error);

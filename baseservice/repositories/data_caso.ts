@@ -30,7 +30,7 @@ export class data_caso {
         return sql.connect(sqlConfig).then((pool:any) =>{
             return pool.request()
             .input('ContratoID', sql.Int, filter)
-            .execute('getFilteredVentas')
+            .execute('showContractData')
             .then((result:any) => {
                 console.log(result)
                 return result.recordset;
