@@ -14,9 +14,9 @@ BEGIN
     WHERE c.contrato_id <= @ContratoID;
 END;
 
+EXEC dbo.showContractData @ContratoID = 12;
 EXEC dbo.showContractData @ContratoID = 11;
-EXEC dbo.showContractData @ContratoID = 11;
-EXEC dbo.showContractData @ContratoID = 11;
+EXEC dbo.showContractData @ContratoID = 10;
 EXEC dbo.showContractData @ContratoID = 11;
 EXEC dbo.showContractData @ContratoID = 11;
 EXEC dbo.showContractData @ContratoID = 11;
