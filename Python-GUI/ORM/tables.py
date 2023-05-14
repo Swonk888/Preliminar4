@@ -2,18 +2,19 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Float, Date, LargeBinary, SmallInteger, Time, Boolean
 from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy
+db = SQLAlchemy()
 
+#Creacion de tablas utilizadas para el query deseado
 class Contrato(db.Model):
     __tablename__ = 'contrato'
     contrato_id = Column(SmallInteger, primary_key=True)
     descripcion = Column(String(200), nullable=False)
-    recolector_id = Column(SmallInteger, nullable=True)
-    ubicacion_id = Column(LargeBinary, nullable=False)
+    recolector_id = Column(SmallInteger, ForeignKey('recolectores.recolector_id'), nullable=True)
+    ubicacion_id = Column(SmallInteger, ForeignKey('ubicaciones.ubicacion_id'), nullable=False)
     porcentaje = Column(Float(10,2), nullable=False)
    
 class DesechoMovimientos(db.Model):
-    __tablename__ = 'desechos_movimiento'
+    __tablename__ = 'desecho_movimientos'
     w_mov_id = Column(SmallInteger, primary_key=True)
     posttime = Column(DateTime, nullable=False)
     responsible_name = Column(String(20), nullable=False)
