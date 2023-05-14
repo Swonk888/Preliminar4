@@ -33,7 +33,7 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-	&quot;filter&quot;: 10&#xd;
+	&quot;filter&quot;: 12&#xd;
 }&#xd;
 &#xd;
 </stringProp>
