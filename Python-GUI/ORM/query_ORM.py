@@ -54,12 +54,13 @@ def contractData (contrato_id):
     return jsontext
 
 #llama a la funcion del query con el parametro que se desea
+'''
 try:
     ID = int(input("Insertar ID de contrato ----> "))
     selected = contractData(ID)
 except:
     print ("El valor no es numerico o no existe el ID")
-
+'''
 #Lo mismo pero Toma en cuenta tiempo de ejecucion (elejir numero de threads)
 """
 def run_orm(idNum, threadsAmount):

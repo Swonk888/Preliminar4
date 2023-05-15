@@ -8,9 +8,11 @@ const sqlConfig = {
     server: "localhost",
     options: {
         encrypt: true,
-        trustServerCertificate: true
+        trustServerCertificate: true,
+        requestTimeout: 60000
     }
 }
+
 
 export class data_caso2 {
     private log: Logger;
@@ -19,6 +21,14 @@ export class data_caso2 {
     {
         this.log = new Logger();
     }
+
+    private sleep(milliseconds:any) {
+        const date = Date.now();
+        let currentDate = null;
+        do {
+          currentDate = Date.now();
+        } while (currentDate - date < milliseconds);
+        }
 
     public async getVentasbyFilterNoPool(filter: number): Promise<any> {
         const connection = await sql.connect(sqlConfig);
@@ -36,5 +46,3 @@ export class data_caso2 {
         }
         }
 }
-
-
