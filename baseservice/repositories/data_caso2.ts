@@ -28,7 +28,7 @@ export class data_caso2 {
         do {
           currentDate = Date.now();
         } while (currentDate - date < milliseconds);
-        }
+    }
 
     public async getVentasbyFilterNoPool(filter: number): Promise<any> {
         const connection = await sql.connect(sqlConfig);
