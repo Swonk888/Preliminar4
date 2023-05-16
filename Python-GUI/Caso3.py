@@ -132,7 +132,7 @@ class VentanaRegistroVentas(tk.Frame):
             precio = round(float(precio0),3)
 
             costo =  float(self.costo.get())
-            costo = costo + (precio * cantidad)
+            costo = (costo + (precio * cantidad))*float(self.tipo_cambio.get())
             simbolo = self.simbolo.get()
             self.costo.set(str(costo))
 
@@ -143,7 +143,7 @@ class VentanaRegistroVentas(tk.Frame):
             self.productos.append([nombreP, cantidad, precio, moneda_id, tipo_cambio_id])
 
             contrato =int(self.contrato.get())
-            costo2 = float(self.costoP.get())
+            costo2 = float(self.costoP.get())*float(self.tipo_cambio.get())
             ganancias =  costo - costo2
             self.ganancias.append([ganancias, contrato])
 
@@ -281,19 +281,12 @@ class VentanaRegistroVentas(tk.Frame):
                 cursor.execute('SELECT producto_id FROM productos WHERE descripcion = ?', nombre_producto)
                 producto_id = cursor.fetchone()[0]
 
-                # Calcular el monto de la venta
-                monto_venta = cantidad * precio
-
-                fecha = '2023-05-12 07:00:00'    
-
-                # Registrar Venta
-                cursor.execute('INSERT INTO ventas (producto_id, monto, fecha, cantidad, moneda_id, tipo_cambio_id) values (?, ?, ?, ?, ?, ?)', producto_id, monto_venta, fecha, cantidad, moneda, tipo_cambio)
+                cursor.execute("EXEC InsertarVenta ?, ?, ?, ?, ?, ?", producto_id, precio, cantidad, moneda, tipo_cambio)
                 conn.commit()
 
             
             # Mostrar un mensaje de confirmación
-            messagebox.showinfo('Venta guardada', f'Se ha registrado una venta por un monto total de {self.simbolo.get()} {monto_venta}.')
-            self.pagos()
+            messagebox.showinfo('Venta guardada', f'Se ha registrado la venta')
             self.carrito_listbox.delete(0, tk.END)
             self.nombre_producto.set('Seleccione un producto')
             self.precio.set('0')
