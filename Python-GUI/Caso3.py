@@ -86,18 +86,23 @@ class VentanaRegistroVentas(tk.Frame):
         if seleccionado:
             self.carrito_listbox.delete(seleccionado)
             self.compra.remove(nombre)
+            cant=0
             for i, producto in enumerate(self.productos):
                 if producto[0] == nombre:
                     cant0=producto[1]
+                    cant=producto[1]
                     precio = producto[2]
-                    costo = cant0*precio
-                    self.costo.set(str(float(self.costo.get())-costo))
+                    costo = round(cant0*precio,3)
+                    if float(self.costo.get())-costo < 0:
+                        self.costo.set(str(0))
+                    else:
+                        self.costo.set(str(round(float(self.costo.get())-costo, 2)))
                     self.productos.remove(producto)
-            cantidad = float(self.cantidad.get())
             nombreP = self.nombre_producto.get()
-            cantidadP = float(self.cantidad_disponible.get()) + cantidad
-            cursor.execute('SELECT producto_id FROM productos WHERE descripcion = ?', nombreP)
+            cursor.execute('SELECT producto_id FROM productos WHERE descripcion = ?', nombre)
             producto_id = cursor.fetchall()[0][0]
+            cursor.execute('SELECT cantidad FROM productos_producidos WHERE producto_id = ?', producto_id)
+            cantidadP = float(cursor.fetchall()[0][0]) + cant
             cursor.execute('UPDATE productos_producidos set cantidad =? where producto_id = ?', cantidadP,producto_id)
             conn.commit()
             self.actualizar_cantidad(nombreP)
@@ -127,7 +132,8 @@ class VentanaRegistroVentas(tk.Frame):
         nombreP = self.nombre_producto.get()
         cantidad = float(self.cantidad.get())
         precio0 = (self.precio.get())[1:-1]
-        precio = float(precio0)
+        precio = round(float(precio0),3)
+
         costo =  float(self.costo.get())
         costo = costo + (precio * cantidad)
         simbolo = self.simbolo.get()
@@ -167,7 +173,7 @@ class VentanaRegistroVentas(tk.Frame):
         precio = float(cursor.fetchall()[0][0])
         tipo_cambio = float(self.tipo_cambio.get())
         simbolo = self.simbolo.get()
-        precio =  precio / tipo_cambio
+        precio =  (precio / tipo_cambio)
 
         # actualizar la variable de cantidad disponible y la etiqueta correspondiente
         self.precio.set(simbolo + str(precio))
@@ -213,14 +219,14 @@ class VentanaRegistroVentas(tk.Frame):
         conn =  pyodbc.connect(f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};TRUSTED_CONNECTION=yes;')
         cursor = conn.cursor()
 
-
+        indice = 0
 
         # Obtener el contrato correspondiente al producto
         for i, gana in enumerate(self.ganancias):
             cursor = conn.cursor()
             cursor.execute('SELECT actor_id FROM actores_x_contrato WHERE contrato_id = ?', gana[1])
             actores = cursor.fetchall()
-
+                
             cursor.execute('SELECT porcentaje FROM actores_x_contrato WHERE contrato_id = ?', gana[1])
             porcentajes = cursor.fetchall()
 
@@ -236,20 +242,24 @@ class VentanaRegistroVentas(tk.Frame):
             montoR = gana[0] * float(porcentajeR)
             ganancia =  gana[0]
             ganancia = ganancia - montoR
+            
             # Mostrar los montos en una lista
-            tk.Label(ventana_montos, text=nombre).grid(row=2*i + 1+ len(actores)*i, column=0)
-            tk.Label(ventana_montos, text=str(montoR)).grid(row=2*i + 1+ len(actores)*1, column=1)
+            tk.Label(ventana_montos, text=nombre).grid(row=indice,  column=0)
+            tk.Label(ventana_montos, text=str(montoR)).grid(row=indice, column=1)
+            indice = indice+1
 
             for j, actor in enumerate(actores):
-                cursor.execute('SELECT descripcion FROM actores WHERE actor_id = ?', actor[1])
-                nombreA = cursor.fetchall()[0]
-                montoN = float(porcentajes[j]) * gana[0]
+                cursor.execute('SELECT descripcion FROM actores WHERE actor_id = ?', actor)
+                nombreA = cursor.fetchone()[0]
+                montoN = float(porcentajes[j][0]) * gana[0]
                 ganancia = ganancia - montoN
-                tk.Label(ventana_montos, text=nombreA).grid(row=(len(actores))*i+j+1, column=0)
-                tk.Label(ventana_montos, text=str(montoN)).grid(row=(len(actores))*i+j+1, column=1)
+                tk.Label(ventana_montos, text=nombreA).grid(row= indice, column=0)
+                tk.Label(ventana_montos, text=str(montoN)).grid(row=indice, column=1)
+                indice = indice+1
             montoE = ganancia
-            tk.Label(ventana_montos, text='Esencial Verde').grid(row=2*i + 2+ len(actores), column=0)
-            tk.Label(ventana_montos, text=str(montoE)).grid(row=2*i + 2+ len(actores), column=1)
+            tk.Label(ventana_montos, text='Esencial Verde').grid(row=indice, column=0)
+            tk.Label(ventana_montos, text=str(montoE)).grid(row=indice, column=1)
+            indice = indice+1
 
 
     def guardar_venta(self):
