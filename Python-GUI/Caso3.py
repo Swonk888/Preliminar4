@@ -100,6 +100,8 @@ class VentanaRegistroVentas(tk.Frame):
             cantidadP = float(cursor.fetchall()[0][0]) + cant
             cursor.execute('UPDATE productos_producidos set cantidad =? where producto_id = ?', cantidadP,producto_id)
             conn.commit()
+            indice = seleccionado[0]
+            del self.ganancias[indice]
             self.actualizar_cantidad(nombreP)
 
     def actualizar_moneda(self, moneda):
@@ -132,7 +134,7 @@ class VentanaRegistroVentas(tk.Frame):
             precio = round(float(precio0),3)
 
             costo =  float(self.costo.get())
-            costo = (costo + (precio * cantidad))*float(self.tipo_cambio.get())
+            costo = (costo + (precio * cantidad))
             simbolo = self.simbolo.get()
             self.costo.set(str(costo))
 
@@ -143,7 +145,7 @@ class VentanaRegistroVentas(tk.Frame):
             self.productos.append([nombreP, cantidad, precio, moneda_id, tipo_cambio_id])
 
             contrato =int(self.contrato.get())
-            costo2 = float(self.costoP.get())*float(self.tipo_cambio.get())
+            costo2 = float(self.costoP.get())/float(self.tipo_cambio.get())
             ganancias =  costo - costo2
             self.ganancias.append([ganancias, contrato])
 
@@ -193,7 +195,7 @@ class VentanaRegistroVentas(tk.Frame):
         proceso_id = cursor.fetchall()[0][0]
         cursor.execute('SELECT costo FROM proceso WHERE proceso_id = ?', proceso_id)
         costo2 = cursor.fetchall()[0][0]
-
+    
         # obtener la cantidad disponible del producto seleccionado
         cursor.execute('SELECT cantidad FROM productos_producidos WHERE producto_id = ? AND contrato_id = ?', producto_id, contrato_id)
         cantidad_disponible = cursor.fetchone()[0]
@@ -281,12 +283,13 @@ class VentanaRegistroVentas(tk.Frame):
                 cursor.execute('SELECT producto_id FROM productos WHERE descripcion = ?', nombre_producto)
                 producto_id = cursor.fetchone()[0]
 
-                cursor.execute("EXEC InsertarVenta ?, ?, ?, ?, ?, ?", producto_id, precio, cantidad, moneda, tipo_cambio)
+                cursor.execute("EXEC InsertarVenta ?, ?, ?, ?, ?", producto_id, precio, cantidad, moneda, tipo_cambio)
                 conn.commit()
 
             
             # Mostrar un mensaje de confirmación
             messagebox.showinfo('Venta guardada', f'Se ha registrado la venta')
+            self.pagos()
             self.carrito_listbox.delete(0, tk.END)
             self.nombre_producto.set('Seleccione un producto')
             self.precio.set('0')
