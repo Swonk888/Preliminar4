@@ -64,15 +64,12 @@ class VentanaRegistroVentas(tk.Frame):
         self.carrito_listbox.grid(row=9, columnspan=2, pady=2)
 
         #Eliminar producto
-        tk.Button(self, text='Eliminar Producto', command=self.eliminar_producto).grid(row=9, column=3)
+        tk.Button(self, text='Eliminar Producto', command=self.eliminar_producto).grid(row=9, column=2)
 
 
 
         # botón de registro de venta
         tk.Button(self, text='Registrar venta', command=self.guardar_venta).grid(row=10, column=2)
-
-        # botón de pagos
-        tk.Button(self, text='Ver detalle', command=self.pagos).grid(row=11, column=2)
 
     def eliminar_producto(self):
         server = 'localhost'
@@ -160,6 +157,7 @@ class VentanaRegistroVentas(tk.Frame):
             producto_id = cursor.fetchall()[0][0]
             cursor.execute('UPDATE productos_producidos set cantidad =? where producto_id = ?', cantidadP,producto_id)
             conn.commit()
+            self.ganancias.remove
             self.actualizar_cantidad(nombreP)
 
 
@@ -292,9 +290,12 @@ class VentanaRegistroVentas(tk.Frame):
                 cursor.execute('INSERT INTO ventas (producto_id, monto, fecha, cantidad, moneda_id, tipo_cambio_id) values (?, ?, ?, ?, ?, ?)', producto_id, monto_venta, fecha, cantidad, moneda, tipo_cambio)
                 conn.commit()
 
+            
+            # Mostrar un mensaje de confirmación
+            messagebox.showinfo('Venta guardada', f'Se ha registrado una venta por un monto total de {self.simbolo.get()} {monto_venta}.')
+            self.pagos()
             self.carrito_listbox.delete(0, tk.END)
             self.nombre_producto.set('Seleccione un producto')
-            self.cantidad_disponible.set('0')
             self.precio.set('0')
             self.costo.set('0')
             self.costoP.set('0')
@@ -304,9 +305,6 @@ class VentanaRegistroVentas(tk.Frame):
             self.contrato.set('0')
             self.tipo_cambio.set('1')
             self.simbolo.set('₡')
-            # Mostrar un mensaje de confirmación
-            messagebox.showinfo('Venta guardada', f'Se ha registrado una venta por un monto total de {self.simbolo.get()} {monto_venta}.')
-
 
 root = tk.Tk()
 app = VentanaRegistroVentas(master=root)
