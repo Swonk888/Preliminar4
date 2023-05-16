@@ -2,8 +2,6 @@ import tkinter as tk
 import pyodbc
 from tkinter import messagebox
 
-#cursor.execute('SELECT * FROM contratos')
-
 class VentanaRegistroVentas(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -300,3 +298,4 @@ root = tk.Tk()
 app = VentanaRegistroVentas(master=root)
 app.mainloop()
 
+#FINAL
