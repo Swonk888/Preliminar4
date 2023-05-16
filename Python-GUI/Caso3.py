@@ -290,6 +290,7 @@ class VentanaRegistroVentas(tk.Frame):
                 cursor.execute('INSERT INTO ventas (producto_id, monto, fecha, cantidad, moneda_id, tipo_cambio_id) values (?, ?, ?, ?, ?, ?)', producto_id, monto_venta, fecha, cantidad, moneda, tipo_cambio)
                 conn.commit()
 
+            self.carrito_listbox.delete(0, tk.END)
             # Mostrar un mensaje de confirmación
             messagebox.showinfo('Venta guardada', f'Se ha registrado una venta por un monto total de {self.simbolo.get()} {monto_venta}.')
 
