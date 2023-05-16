@@ -124,41 +124,43 @@ class VentanaRegistroVentas(tk.Frame):
         conn =  pyodbc.connect(f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};TRUSTED_CONNECTION=yes;')
         cursor = conn.cursor()
         
+        if int(self.cantidad_disponible.get()) - int(self.cantidad.get()) < 0:
+            messagebox.showinfo('Error', f'No hay productos disponibles para agregar al carrito')
+        else:
+            moneda = self.moneda.get()
+            tipo_cambio = float(self.tipo_cambio.get())
+            nombreP = self.nombre_producto.get()
+            cantidad = float(self.cantidad.get())
+            precio0 = (self.precio.get())[1:-1]
+            precio = round(float(precio0),3)
 
-        moneda = self.moneda.get()
-        tipo_cambio = float(self.tipo_cambio.get())
-        nombreP = self.nombre_producto.get()
-        cantidad = float(self.cantidad.get())
-        precio0 = (self.precio.get())[1:-1]
-        precio = round(float(precio0),3)
+            costo =  float(self.costo.get())
+            costo = costo + (precio * cantidad)
+            simbolo = self.simbolo.get()
+            self.costo.set(str(costo))
 
-        costo =  float(self.costo.get())
-        costo = costo + (precio * cantidad)
-        simbolo = self.simbolo.get()
-        self.costo.set(str(costo))
+            cursor.execute('SELECT moneda_id FROM monedas WHERE nombre = ?', moneda)
+            moneda_id = cursor.fetchone()[0]
+            cursor.execute('SELECT tipo_cambio_id FROM tipo_cambio WHERE tipo_cambio = ? and moneda_id = ?', tipo_cambio, moneda_id)
+            tipo_cambio_id = cursor.fetchone()[0]
+            self.productos.append([nombreP, cantidad, precio, moneda_id, tipo_cambio_id])
 
-        cursor.execute('SELECT moneda_id FROM monedas WHERE nombre = ?', moneda)
-        moneda_id = cursor.fetchone()[0]
-        cursor.execute('SELECT tipo_cambio_id FROM tipo_cambio WHERE tipo_cambio = ? and moneda_id = ?', tipo_cambio, moneda_id)
-        tipo_cambio_id = cursor.fetchone()[0]
-        self.productos.append([nombreP, cantidad, precio, moneda_id, tipo_cambio_id])
+            contrato =int(self.contrato.get())
+            costo2 = float(self.costoP.get())
+            ganancias =  costo - costo2
+            self.ganancias.append([ganancias, contrato])
 
-        contrato =int(self.contrato.get())
-        costo2 = float(self.costoP.get())
-        ganancias =  costo - costo2
-        self.ganancias.append([ganancias, contrato])
+            
+            producto = (self.nombre_producto.get())
+            self.compra.append(producto)
+            self.carrito_listbox.insert(tk.END, producto)
 
-        
-        producto = (self.nombre_producto.get())
-        self.compra.append(producto)
-        self.carrito_listbox.insert(tk.END, producto)
-
-        cantidadP = float(self.cantidad_disponible.get()) - cantidad
-        cursor.execute('SELECT producto_id FROM productos WHERE descripcion = ?', nombreP)
-        producto_id = cursor.fetchall()[0][0]
-        cursor.execute('UPDATE productos_producidos set cantidad =? where producto_id = ?', cantidadP,producto_id)
-        conn.commit()
-        self.actualizar_cantidad(nombreP)
+            cantidadP = float(self.cantidad_disponible.get()) - cantidad
+            cursor.execute('SELECT producto_id FROM productos WHERE descripcion = ?', nombreP)
+            producto_id = cursor.fetchall()[0][0]
+            cursor.execute('UPDATE productos_producidos set cantidad =? where producto_id = ?', cantidadP,producto_id)
+            conn.commit()
+            self.actualizar_cantidad(nombreP)
 
 
     def actualizar_precio(self, producto):
@@ -291,6 +293,17 @@ class VentanaRegistroVentas(tk.Frame):
                 conn.commit()
 
             self.carrito_listbox.delete(0, tk.END)
+            self.nombre_producto.set('Seleccione un producto')
+            self.cantidad_disponible.set('0')
+            self.precio.set('0')
+            self.costo.set('0')
+            self.costoP.set('0')
+            self.ganancias = []
+            self.compra = []
+            self.productos = []
+            self.contrato.set('0')
+            self.tipo_cambio.set('1')
+            self.simbolo.set('₡')
             # Mostrar un mensaje de confirmación
             messagebox.showinfo('Venta guardada', f'Se ha registrado una venta por un monto total de {self.simbolo.get()} {monto_venta}.')
 
