@@ -15,6 +15,7 @@ delete from recolectores where recolector_id >= 0;
 delete from productores_residuos where productor_id >= 0;
 delete from contacto_x_actor where actor_id >= 0
 delete from contacto_value where contacto_id >= 0;
+delete from actores_x_contrato where actor_id >=0;
 delete from actores where actor_id >= 0;
 delete from tipo_contactos where tipo_id >= 0;
 delete from desechos where desecho_id >= 0;
@@ -24,6 +25,7 @@ delete from ubicaciones where ubicacion_id >= 0;
 delete from paises where pais_id >= 0;
 delete from Estado where estado_id >= 0;
 delete from ciudades where ciudad_id >= 0;
+
 
 DBCC CHECKIDENT(ventas, RESEED, 0);
 
@@ -69,9 +71,9 @@ insert into tipo_contactos (nombre) values ('correo');
 insert into tipo_contactos (nombre) values ('fax');
 
 DBCC CHECKIDENT(actores, RESEED, 0);
-insert into actores (descripcion, region_id) values ('gobierno', 1);
-insert into actores (descripcion, region_id) values ('municipalidad', 2);
-insert into actores (descripcion, region_id) values ('ayuntamiento', 3);
+insert into actores (descripcion, region_id, balance) values ('gobierno', 1, 99999.99);
+insert into actores (descripcion, region_id, balance) values ('municipalidad', 2, 100000.10);
+insert into actores (descripcion, region_id, balance) values ('ayuntamiento', 3, 312.12);
 
 DBCC CHECKIDENT(contacto_value, RESEED, 0);
 insert into contacto_value (tipo_id, value, posttime, enable) values (2, 'hola@gmail.com', '2003-03-12 12:12:00', 1);
@@ -88,12 +90,11 @@ insert into productores_residuos (nombre, horario, porcentaje_carbon, balance, u
 insert into productores_residuos (nombre, horario, porcentaje_carbon, balance, ubicaicon_id, contacto_id) values ('KFC', '12:30:00', '0.8', '1100000.80', 3, 2);
 insert into productores_residuos (nombre, horario, porcentaje_carbon, balance, ubicaicon_id, contacto_id) values ('Barcelo', '21:15:00', '0.8', '90012100.5', 1, 3);
 
-
 -- falta correr
 DBCC CHECKIDENT(recolectores, RESEED, 3);
-insert into recolectores (productor_id, nombre, ubicacion_id) values (1, 'CoopeSan', 1);
-insert into recolectores (productor_id, nombre, ubicacion_id) values (2, 'TranSan', 3);
-insert into recolectores (productor_id, nombre, ubicacion_id) values (3, 'NationTran', 2);
+insert into recolectores (productor_id, nombre, ubicacion_id, balance) values (1, 'CoopeSan', 1, 1000.50);
+insert into recolectores (productor_id, nombre, ubicacion_id, balance) values (2, 'TranSan', 3, 8000.0);
+insert into recolectores (productor_id, nombre, ubicacion_id, balance) values (3, 'NationTran', 2, 302.11);
 
 DBCC CHECKIDENT(local_ev, RESEED, 0);
 insert into local_ev (telefono, ubicacion_id) values (24097689, 1);
